@@ -1,0 +1,28 @@
+deamonset.yaml  deployment.yml
+root@ip-172-31-1-74:~/kubernetes/nginx# cat deamonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+
+
+metadata:
+  name: nginx-deamonset
+  namespace: nginx
+
+
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+root@ip-172-31-1-74:~/kubernetes/nginx#
