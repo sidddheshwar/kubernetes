@@ -1,0 +1,29 @@
+root@ip-172-31-1-74:~/kubernetes/nginx# cat deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+
+
+metadata:
+  name: nginx-deploymnet
+  namespace: nginx
+
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+root@ip-172-31-1-74:~/kubernetes/nginx#

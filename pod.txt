@@ -1,0 +1,14 @@
+root@ip-172-31-1-74:~/kubernetes/nginx# cat pod.yaml
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-pod
+  namespace: nginx
+
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+      - containerPort: 80
+root@ip-172-31-1-74:~/kubernetes/nginx#
