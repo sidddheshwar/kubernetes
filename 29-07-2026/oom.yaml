@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: memory-test
+  namespace: httpd
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: memory-test
+
+  template:
+    metadata:
+      labels:
+        app: memory-test
+
+    spec:
+      containers:
+      - name: python
+        image: python:latest
+
+        command:
+        - python
+        - -c
+        - |
+          a = []
+          while True:
+              a.append("A" * 1024 * 1024)
+
+        resources:
+          requests:
+            memory: "64Mi"
+          limits:
+            memory: "128Mi"

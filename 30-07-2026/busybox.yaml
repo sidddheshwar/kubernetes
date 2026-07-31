@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busybox-deployment
+  namespace: httpd
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: busybox
+
+  template:
+     metadata:
+       labels:
+         app: busybox
+
+     spec:
+       containers:
+        - image: busybox:latest
+          name: busybox
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                  echo "Deploymnet Working"
+                sleep 10
+              done
+        
