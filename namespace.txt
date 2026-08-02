@@ -1,0 +1,27 @@
+root@ip-172-31-1-74:~/kubernetes/nginx# cat namespace.yaml
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: nginx
+root@ip-172-31-1-74:~/kubernetes/nginx#
+
+
+root@ip-172-31-1-74:~/kubernetes/nginx# vim new_namespace.yaml
+root@ip-172-31-1-74:~/kubernetes/nginx#
+root@ip-172-31-1-74:~/kubernetes/nginx# kubectl apply -f new_namespace.yaml
+namespace/httpd created
+root@ip-172-31-1-74:~/kubernetes/nginx# cat new_namespace.yaml
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: httpd
+root@ip-172-31-1-74:~/kubernetes/nginx# kubectl get ns
+NAME                 STATUS   AGE
+default              Active   2d1h
+httpd                Active   22s
+kube-node-lease      Active   2d1h
+kube-public          Active   2d1h
+kube-system          Active   2d1h
+local-path-storage   Active   2d1h
+nginx                Active   24h
+root@ip-172-31-1-74:~/kubernetes/nginx#

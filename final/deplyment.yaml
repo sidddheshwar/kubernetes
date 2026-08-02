@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: production-deployment
+  namespace: httpd
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+        app: production-dep
+
+  template:
+    metadata:
+       labels:
+         app: production-dep
+    spec:
+       containers:
+       - image: nginx:latest
+         name: nginx
+         ports:
+         - containerPort: 80
+        
+         resources:
+           requests:
+             cpu: "100m"
+             memory: "128Mi"
+
+           limits:
+             cpu: "300m"
+             memory: "256Mi"
+         readinessProbe:
+           httpGet:
+              path: /
+              port: 80
+           initialDelaySeconds: 5
+           periodSeconds: 5
+
+
+         livenessProbe:
+           httpGet:
+              path: /
+              port: 80
+
+           initialDelaySeconds: 10
+           periodSeconds: 10
+

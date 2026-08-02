@@ -1,0 +1,54 @@
+root@ip-172-31-1-74:~/kubernetes/nginx# cat cronjob.yaml
+kind: CronJob
+apiVersion: batch/v1
+metadata:
+  name: cron-job-minute-backup
+  namespace: nginx
+
+spec:
+  schedule: "*/2 * * * *"
+
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: minute-backup
+          labels:
+            app: minute-backup
+
+        spec:
+          containers:
+          - name: backup-every2-minute
+            image: busybox:latest
+            command:
+            - sh
+            - -c
+            - |
+              echo "Backup Started" ;
+              mkdir -p /backups &&
+              mkdir -p /data &&
+              cp -r /data/* /backups/ 2>/dev/null || true
+              echo "backup completed" ;
+            volumeMounts:
+            - name: data-volume
+              mountPath: /data
+
+            - name: backup-volume
+              mountPath: /backups
+
+          restartPolicy: OnFailure
+
+          volumes:
+          - name: data-volume
+            hostPath:
+              path: /data
+              type: DirectoryOrCreate
+
+          - name: backup-volume
+            hostPath:
+              path: /backups
+              type: DirectoryOrCreate
+
+
+
+root@ip-172-31-1-74:~/kubernetes/nginx#

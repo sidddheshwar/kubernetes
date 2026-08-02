@@ -1,0 +1,22 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-pod
+  namespace: nginx
+
+spec:
+  containers:
+   - name: nginx
+     image: nginx:latest
+     ports:
+       - containerPort: 80
+       
+   - name: busybox-container
+     image: busybox:latest
+     command: ["sh", "-c" , "while true; do sleep; done"]
+
+   - name: ubuntu-container
+     image: ubuntu:latest
+     command:
+       - sleep
+       - infinity

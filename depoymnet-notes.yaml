@@ -1,0 +1,509 @@
+भाऊ, ही नोट्स तू थेट **`README.md`** मध्ये टाकू शकतोस. Interview च्या आधी 5 मिनिटांत revise होतील. 👇
+
+---
+
+# Kubernetes Production Deployment (Notes)
+
+## Complete YAML
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: production-deployment
+  namespace: httpd
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: production-dep
+
+  template:
+    metadata:
+      labels:
+        app: production-dep
+
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+
+        ports:
+        - containerPort: 80
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+```
+
+---
+
+# Line by Line Explanation
+
+## apiVersion
+
+```yaml
+apiVersion: apps/v1
+```
+
+➡️ Deployment कोणत्या Kubernetes API ला belong करतो ते सांगतो.
+
+---
+
+## kind
+
+```yaml
+kind: Deployment
+```
+
+➡️ कोणता object तयार करायचा आहे.
+इथे Deployment.
+
+---
+
+## metadata
+
+```yaml
+metadata:
+```
+
+➡️ Object ची माहिती.
+
+---
+
+## name
+
+```yaml
+name: production-deployment
+```
+
+➡️ Deployment चे नाव.
+
+Command:
+
+```bash
+kubectl get deployment
+```
+
+---
+
+## namespace
+
+```yaml
+namespace: httpd
+```
+
+➡️ हा Deployment कोणत्या Namespace मध्ये तयार होईल.
+
+---
+
+# spec
+
+```yaml
+spec:
+```
+
+➡️ Deployment ची configuration सुरू होते.
+
+---
+
+## replicas
+
+```yaml
+replicas: 3
+```
+
+➡️ नेहमी 3 Pods Running ठेव.
+
+जर 1 Pod delete झाला तर ReplicaSet नवीन Pod तयार करेल.
+
+---
+
+## selector
+
+```yaml
+selector:
+  matchLabels:
+    app: production-dep
+```
+
+➡️ Deployment कोणते Pods manage करणार ते Label वरून ठरवतो.
+
+---
+
+## template
+
+```yaml
+template:
+```
+
+➡️ नवीन Pod तयार करण्याचा Template.
+
+ReplicaSet हाच Template वापरतो.
+
+---
+
+## metadata.labels
+
+```yaml
+labels:
+  app: production-dep
+```
+
+➡️ प्रत्येक Pod ला Label देतो.
+
+हा Label selector शी match झाला पाहिजे.
+
+---
+
+## spec
+
+```yaml
+spec:
+```
+
+➡️ Pod ची configuration.
+
+---
+
+## containers
+
+```yaml
+containers:
+```
+
+➡️ Pod मध्ये किती Containers आहेत.
+
+---
+
+## name
+
+```yaml
+name: nginx
+```
+
+➡️ Container चे नाव.
+
+---
+
+## image
+
+```yaml
+image: nginx:latest
+```
+
+➡️ कोणती Docker Image वापरायची.
+
+---
+
+## ports
+
+```yaml
+ports:
+- containerPort: 80
+```
+
+➡️ Container कोणत्या Port वर listen करतो.
+
+---
+
+# Resources
+
+```yaml
+resources:
+```
+
+➡️ CPU आणि Memory control.
+
+---
+
+## Requests
+
+```yaml
+requests:
+```
+
+➡️ Minimum Resource.
+
+Scheduler Pod ठेवताना इतका Resource Reserve करतो.
+
+```yaml
+cpu: 100m
+memory: 128Mi
+```
+
+Meaning
+
+CPU
+
+100m = 0.1 CPU
+
+Memory
+
+128Mi = 128 MB
+
+---
+
+## Limits
+
+```yaml
+limits:
+```
+
+➡️ Maximum Resource.
+
+Container Limit cross करू शकत नाही.
+
+```yaml
+cpu: 300m
+memory: 256Mi
+```
+
+Meaning
+
+CPU
+
+300m = 0.3 CPU
+
+Memory
+
+256Mi
+
+जर Memory 256Mi पेक्षा जास्त झाली
+
+➡️ OOMKilled
+
+---
+
+# Readiness Probe
+
+```yaml
+readinessProbe:
+```
+
+Purpose
+
+➡️ Pod Traffic घेण्यासाठी Ready आहे का?
+
+Check
+
+```yaml
+httpGet:
+  path: /
+  port: 80
+```
+
+Meaning
+
+```
+GET http://Pod-IP:80/
+```
+
+जर HTTP 200 आला
+
+✅ Ready
+
+जर 404 / 500 आला
+
+❌ Not Ready
+
+Pod Running राहील पण Service Traffic पाठवणार नाही.
+
+---
+
+## initialDelaySeconds
+
+```yaml
+initialDelaySeconds: 5
+```
+
+Container सुरू झाल्यावर
+
+5 Seconds Wait
+
+मग Probe सुरू.
+
+---
+
+## periodSeconds
+
+```yaml
+periodSeconds: 5
+```
+
+प्रत्येक 5 सेकंदांनी Check.
+
+---
+
+# Liveness Probe
+
+```yaml
+livenessProbe:
+```
+
+Purpose
+
+➡️ Application जिवंत आहे का?
+
+Check
+
+```yaml
+httpGet:
+  path: /
+  port: 80
+```
+
+जर Success
+
+✅ काहीच नाही
+
+जर Fail
+
+❌ Kubernetes Container Restart करेल.
+
+---
+
+## initialDelaySeconds
+
+```yaml
+10
+```
+
+Application ला Start व्हायला Time देतो.
+
+---
+
+## periodSeconds
+
+```yaml
+10
+```
+
+प्रत्येक 10 Seconds ला Health Check.
+
+---
+
+# Flow Diagram
+
+```
+Deployment
+      │
+      ▼
+ReplicaSet
+      │
+      ▼
+Pods (3)
+      │
+      ▼
+Container (nginx)
+      │
+      ├── Requests
+      ├── Limits
+      ├── Readiness Probe
+      └── Liveness Probe
+```
+
+---
+
+# Commands
+
+```bash
+kubectl apply -f deployment.yaml
+```
+
+Deployment तयार कर.
+
+---
+
+```bash
+kubectl get deployment
+```
+
+Deployment पाहा.
+
+---
+
+```bash
+kubectl get rs
+```
+
+ReplicaSet पाहा.
+
+---
+
+```bash
+kubectl get pod
+```
+
+Pods पाहा.
+
+---
+
+```bash
+kubectl describe deployment production-deployment
+```
+
+Complete Details.
+
+---
+
+```bash
+kubectl rollout history deployment production-deployment
+```
+
+Rollout History.
+
+---
+
+```bash
+kubectl rollout undo deployment production-deployment
+```
+
+Rollback.
+
+---
+
+```bash
+kubectl top pod
+```
+
+Pod CPU आणि Memory Usage.
+
+---
+
+```bash
+kubectl top node
+```
+
+Node CPU आणि Memory Usage.
+
+---
+
+## Interview Summary (30 सेकंद)
+
+> **Deployment** हा Kubernetes Object आहे जो ReplicaSet च्या मदतीने Pods manage करतो. `replicas` ने किती Pods चालवायचे ते ठरवतो. `selector` आणि `labels` Pod identify करतात. `resources` मधून CPU/Memory requests आणि limits define करतो. `readinessProbe` Pod ला traffic मिळण्यापूर्वी health check करते, तर `livenessProbe` application hang झाल्यास container restart करते. त्यामुळे application highly available आणि self-healing राहते.
+
+ही नोट्स GitHub वर `Deployment-Notes.md` किंवा `README.md` मध्ये सेव्ह केल्यास पुढे revision साठी खूप उपयोगी पडतील.
+
