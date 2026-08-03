@@ -1,0 +1,12 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app-configmap
+  namespace: configmap-demo
+
+data:
+  APP_NAME: "TradePlus"
+  APP_ENV: "Production"
+  DB_HOST: "mysql"
+  DB_PORT: "3306"
+

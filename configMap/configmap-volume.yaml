@@ -1,0 +1,14 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: web-config
+  namespace: configmap-demo
+
+data:
+  index.html: |
+    <html>
+      <body>
+        <h1> Welcome to the configMap volume demo</h1>
+        <h2>Treadeplus Kubernetes</h2>
+      </body>
+    </html>
